@@ -18,8 +18,11 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build --file Dockerfile.ee -t oracle/database:12.1.0.1-ee . 
+# Run:
+#  $ docker build --file Dockerfile.ee -t oracle/database:12.1.0.1-ee . 
+#  $ docker login phx.ocir.io
+#  $ docker tag oracle/database:12.1.0.1-ee phx.ocir.io/weblogick8s/fmwupgrade-db:12.1.0.1-ee
+#  $ docker push phx.ocir.io/weblogick8s/fmwupgrade-db:12.1.0.1-ee
 #
 # Pull base image
 # ---------------
