@@ -133,11 +133,11 @@ else
 
   # Check whether SID is no longer than 12 bytes
   # Github issue #246: Cannot start OracleDB image
-  if [ "${#ORACLE_SID}" -gt 12 ]; then
-     echo "Error: The ORACLE_SID must only be up to 12 characters long."
-     exit 1;
-  fi;
-
+#   if [ "${#ORACLE_SID}" -gt 12 ]; then
+#      echo "Error: The ORACLE_SID must only be up to 12 characters long."
+#      exit 1;
+#   fi;
+# 
   # Check whether SID is alphanumeric
   # Github issue #246: Cannot start OracleDB image
   if [[ "$ORACLE_SID" =~ [^a-zA-Z0-9] ]]; then
