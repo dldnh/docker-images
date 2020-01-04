@@ -1,39 +1,42 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 12c Release 1 Enterprise Edition
+# Stolen from 12.1.0.2
+# Targeting 12.1.0.1 needed for testing
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) linuxamd64_12102_database_1of2.zip
-#     linuxamd64_12102_database_2of2.zip
+# (1) linuxamd64_12c_database_1of2.zip
+#     linuxamd64_12c_database_2of2.zip
 #     Download Oracle Database 12c Release 1 Enterprise Edition for Linux x64
-#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html (may not be valid for 12.1.0.1)
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:12.1.0.2-ee . 
+#      $ docker build --file Dockerfile.ee -t oracle/database:12.1.0.1-ee . 
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim as base
+FROM oraclelinux:6-slim as base
 
 # Maintainer
 # ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+# original was: Gerald Venzl <gerald.venzl@oracle.com>
+MAINTAINER Dave Diamond <dave.diamond@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/12.1.0.2/dbhome_1 \
+    ORACLE_HOME=/opt/oracle/product/12.1.0.1/dbhome_1 \
     INSTALL_DIR=/opt/install \
-    INSTALL_FILE_1="linuxamd64_12102_database_1of2.zip" \
-    INSTALL_FILE_2="linuxamd64_12102_database_2of2.zip" \
+    INSTALL_FILE_1="linuxamd64_12c_database_1of2.zip" \
+    INSTALL_FILE_2="linuxamd64_12c_database_2of2.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
@@ -45,7 +48,8 @@ ENV ORACLE_BASE=/opt/oracle \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
+    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    DISPLAY=100.111.141.6:9
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
@@ -56,6 +60,9 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
 COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
+
+# Install awk which is needed by check-space-file
+RUN yum -y install gawk
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
